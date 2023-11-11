@@ -10,4 +10,5 @@ letsencrypt/*
 
 secrets/
 minio-data/
+database-data/
 .env
