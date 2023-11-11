@@ -9,3 +9,5 @@ letsencrypt
 letsencrypt/*
 
 secrets/
+minio-data/
+.env
