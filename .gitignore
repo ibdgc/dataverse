@@ -7,3 +7,5 @@ dataverse.war
 #Ignoring letsencrpt folders for SSL
 letsencrypt
 letsencrypt/*
+
+secrets/
