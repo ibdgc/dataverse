@@ -10,15 +10,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy codebase to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd $HOME/dataverse
-          git checkout prod
-          git pull origin prod
-          docker-compose down
-          docker-compose up -d
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add SSH key to agent
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent)"
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Pull codebase to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+            cd $HOME/dataverse
+            git restore .
+            git checkout prod
+            git pull origin prod
+          EOF
+
+      - name: Docker Compose Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+            cd $HOME/dataverse
+            docker-compose down
+            docker-compose up -d
+          EOF
+
+      - name: Update Admin pwd
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+            docker exec dataverse asadmin --user admin --passwordfile ${{ secrets.ADMIN_PASSWORD_FILE }} change-admin-password
+          EOF
