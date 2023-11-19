@@ -38,6 +38,9 @@ jobs:
             docker-compose up -d
           EOF
 
+      - name: Wait for Deployment
+        run: sleep 600
+
       - name: Update Admin pwd
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
