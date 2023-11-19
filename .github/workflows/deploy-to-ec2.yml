@@ -41,5 +41,5 @@ jobs:
       - name: Update Admin pwd
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
-            docker exec dataverse asadmin --user admin --passwordfile ${{ secrets.ADMIN_PASSWORD_FILE }} change-admin-password
+            docker exec dataverse asadmin --user admin --passwordfile /secrets/admin/password  change-admin-password
           EOF
