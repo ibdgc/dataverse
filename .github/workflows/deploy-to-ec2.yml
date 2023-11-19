@@ -24,7 +24,7 @@ jobs:
       - name: Pull codebase to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
-            cd $HOME/dataverse
+            cd dataverse
             git restore .
             git checkout prod
             git pull origin prod
@@ -33,7 +33,7 @@ jobs:
       - name: Docker Compose Deploy
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
-            cd $HOME/dataverse
+            cd dataverse
             docker-compose down
             docker-compose up -d
           EOF
